@@ -1,11 +1,11 @@
 ---
 # Connection facts for an OrbStack Linux machine, reached through OrbStack's
 # built-in SSH server (no in-VM sshd / Vagrant required).
-# The machine must be named `orbstack` (OrbStack selects a machine by the SSH user).
+# The machine must be named `ansible-dev` (OrbStack selects a machine by the SSH user).
 # We connect as root (user@machine) so the bootstrap role's raw package install works.
 ansible_host: localhost
 ansible_port: 32222
-ansible_user: root@orbstack
+ansible_user: root@ansible-dev
 ansible_private_key_file: ~/.orbstack/ssh/id_ed25519
 ansible_python_interpreter: /usr/bin/python3
 # OrbStack's SSH server lives on the Mac, so skip the bootstrap role's

@@ -4,7 +4,7 @@
 [python3]
 fedora
 
-# OrbStack (macOS): create the machine with `orb create fedora orbstack`,
+# OrbStack (macOS): create the machine with `orb create fedora ansible-dev`,
 # then uncomment the host below to run ./playbook.orbstack.yml.
 [orbstack]
-orbstack
+ansible-dev
