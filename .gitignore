@@ -4,3 +4,4 @@ roles/*
 files/ssh_keys
 .vagrant
 releases
+.ansible
