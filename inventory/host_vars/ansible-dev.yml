@@ -17,9 +17,9 @@ bootstrap_wait_for_host: no
 # create does not exist. Override the user list (host_vars wins over the shared
 # group_vars/all.yml) to drop `groups: docker`; the Vagrant path is unaffected.
 users_user_list:
-  - name: robertdb
-    comment: Robert de Bock
-    group: robertdb
+  - name: g2g
+    comment: Laurent G
+    group: g2g
     cron_allow: yes
     sudo_options: "ALL=(ALL) NOPASSWD: ALL"
     manage_ssh_key: yes

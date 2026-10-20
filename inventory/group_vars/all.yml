@@ -2,14 +2,14 @@
 bootstrap_wait_for_host: yes
 
 users_group_list:
-  - name: robertdb
+  - name: g2g
 
 users_ssh_key_directory: files/ssh_keys
 
 users_user_list:
-  - name: robertdb
-    comment: Robert de Bock
-    group: robertdb
+  - name: g2g
+    comment: Laurent G
+    group: g2g
     groups: docker
     cron_allow: yes
     sudo_options: "ALL=(ALL) NOPASSWD: ALL"
@@ -26,11 +26,11 @@ ara_configuration:
   - option: host
     value: 0.0.0.0
 
-git_username: robertdb
-git_user_name: Robert de Bock
-git_user_email: robert@meinit.nl
+git_username: g2g
+git_user_name: Laurent G
+git_user_email: laurent@guesde.com
 
-git_repository_destination: /home/robertdb/Documents/github.com/robertdebock
+git_repository_destination: /home/g2g/Documents/github.com/robertdebock
 
 git_repositories:
   - repo: https://github.com/robertdebock/ansible-role-ara.git
