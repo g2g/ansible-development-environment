@@ -5,6 +5,43 @@
   become: yes
   gather_facts: no
 
+  pre_tasks:
+    # Create the OrbStack machine on the Mac if it does not exist yet; the
+    # connection facts in inventory/host_vars/ansible-dev.yml depend on the
+    # machine being named exactly `ansible-dev` (OrbStack selects it by the
+    # `user@machine` SSH user). ansible_host is `localhost`, so the machine
+    # name is taken from the SSH user (root@ansible-dev).
+    - name: check whether the OrbStack machine exists (on the Mac)
+      ansible.builtin.shell: >
+        orb list | awk -v m='{{ ansible_user | default('root@ansible-dev') | split('@') | last }}'
+        '$1==m {found=1} END {exit found?0:1}'
+      delegate_to: localhost
+      become: no
+      register: orb_machine_check
+      failed_when: false
+      changed_when: false
+
+    - name: create the OrbStack machine (on the Mac)
+      ansible.builtin.command: >-
+        orb create fedora
+        {{ ansible_user | default('root@ansible-dev') | split('@') | last }}
+      delegate_to: localhost
+      become: no
+      when: orb_machine_check.rc != 0
+
+    - name: wait for the OrbStack machine to be running
+      ansible.builtin.shell: >
+        orb list | awk -v m='{{ ansible_user | default('root@ansible-dev') | split('@') | last }}'
+        '$1==m {print $2}'
+      delegate_to: localhost
+      become: no
+      register: orb_machine_state
+      until: orb_machine_state.stdout == 'running'
+      retries: 30
+      delay: 5
+      changed_when: false
+      when: orb_machine_check.rc != 0
+
   roles:
     - robertdebock.bootstrap
     - robertdebock.update
