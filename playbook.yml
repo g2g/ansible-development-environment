@@ -15,6 +15,7 @@
     - robertdebock.python_pip
     - robertdebock.docker
     - robertdebock.users
+    - robertdebock.skeleton
     - robertdebock.postfix
     - robertdebock.vagrant
     - robertdebock.investigate

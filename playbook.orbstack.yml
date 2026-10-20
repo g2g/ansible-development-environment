@@ -51,6 +51,7 @@
     - robertdebock.epel
     - robertdebock.python_pip
     - robertdebock.users
+    - robertdebock.skeleton
     - robertdebock.postfix
     - robertdebock.investigate
     - robertdebock.ansible

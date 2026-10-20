@@ -79,6 +79,14 @@ Note: with the `ansible-dev` host uncommented it is part of `hosts: all`, so `./
 
 Preparing your system will take about 15 minutes or so (mostly package and pip installs; the `git` role also clones the configured repositories).
 
+## New roles
+
+`ansible-galaxy init` scaffolds new roles from the [robertdebock role skeleton](https://github.com/robertdebock/ansible-role-skeleton), vendored in `roles/robertdebock.skeleton` and wired in through the `[galaxy]` section of `ansible.cfg`. Run it from this directory so that `ansible.cfg` applies:
+
+```sh
+ansible-galaxy init role_name
+```
+
 ## Code
 
 You are now ready to code! Have fun using these commands:
