@@ -33,31 +33,31 @@ git_user_email: robert@meinit.nl
 git_repository_destination: /home/robertdb/Documents/github.com/robertdebock
 
 git_repositories:
-  - repo: ssh://git@github.com/robertdebock/ansible-role-ara.git
+  - repo: https://github.com/robertdebock/ansible-role-ara.git
     dest: ansible-role-ara
-  - repo: ssh://git@github.com/robertdebock/ansible-role-atom.git
+  - repo: https://github.com/robertdebock/ansible-role-atom.git
     dest: ansible-role-atom
-  - repo: ssh://git@github.com/robertdebock/ansible-role-bootstrap.git
+  - repo: https://github.com/robertdebock/ansible-role-bootstrap.git
     dest: ansible-role-bootstrap
-  - repo: ssh://git@github.com/robertdebock/ansible-role-buildtools.git
+  - repo: https://github.com/robertdebock/ansible-role-buildtools.git
     dest: ansible-role-buildtools
-  - repo: ssh://git@github.com/robertdebock/ansible-role-common.git
+  - repo: https://github.com/robertdebock/ansible-role-common.git
     dest: ansible-role-dnsmasq
-  - repo: ssh://git@github.com/robertdebock/ansible-role-docker.git
+  - repo: https://github.com/robertdebock/ansible-role-docker.git
     dest: ansible-role-docker
-  - repo: ssh://git@github.com/robertdebock/ansible-role-epel.git
+  - repo: https://github.com/robertdebock/ansible-role-epel.git
     dest: ansible-role-epel
-  - repo: ssh://git@github.com/robertdebock/ansible-role-fail2ban.git
+  - repo: https://github.com/robertdebock/ansible-role-fail2ban.git
     dest: ansible-role-fail2ban
-  - repo: ssh://git@github.com/robertdebock/ansible-role-git.git
+  - repo: https://github.com/robertdebock/ansible-role-git.git
     dest: ansible-role-git
-  - repo: ssh://git@github.com/robertdebock/ansible-role-investigate.git
+  - repo: https://github.com/robertdebock/ansible-role-investigate.git
     dest: ansible-role-investigate
-  - repo: ssh://git@github.com/robertdebock/ansible-role-molecule.git
+  - repo: https://github.com/robertdebock/ansible-role-molecule.git
     dest: ansible-role-molecule
-  - repo: ssh://git@github.com/robertdebock/ansible-role-postfix.git
+  - repo: https://github.com/robertdebock/ansible-role-postfix.git
     dest: ansible-role-postfix
-  - repo: ssh://git@github.com/robertdebock/ansible-role-python_pip.git
+  - repo: https://github.com/robertdebock/ansible-role-python_pip.git
     dest: ansible-role-python_pip
-  - repo: ssh://git@github.com/robertdebock/ansible-role-reboot.git
+  - repo: https://github.com/robertdebock/ansible-role-reboot.git
     dest: ansible-role-reboot

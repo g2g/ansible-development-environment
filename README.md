@@ -75,6 +75,8 @@ Afterwards, `molecule`'s docker driver and `ara` run natively on the Mac through
 - **Vagrant** (VirtualBox/libvirt): `./playbook.yml`
 - **OrbStack** (macOS): `./playbook.orbstack.yml -i inventory/hosts`
 
+Note: with the `orbstack` host uncommented it is part of `hosts: all`, so `./playbook.yml` also targets it; re-comment it while working the Vagrant flow, or comment the `fedora` host to avoid an unreachable-host error in the recap.
+
 Preparing your system will take about 15 minutes or so (mostly package and pip installs; the `git` role also clones the configured repositories).
 
 ## Code
