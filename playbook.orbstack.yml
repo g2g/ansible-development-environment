@@ -1,0 +1,110 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: setup an ansible development environment on macOS via OrbStack
+  hosts: orbstack
+  become: yes
+  gather_facts: no
+
+  roles:
+    - robertdebock.bootstrap
+    - robertdebock.update
+    - robertdebock.fail2ban
+    - robertdebock.common
+    - robertdebock.buildtools
+    - robertdebock.epel
+    - robertdebock.python_pip
+    - robertdebock.users
+    - robertdebock.postfix
+    - robertdebock.investigate
+    - robertdebock.ansible
+    - robertdebock.ansible_lint
+    - robertdebock.molecule
+    - robertdebock.ara
+
+  tasks:
+    # The vendored robertdebock.ara role (2018/2019 era) writes its config to
+    # [ara] in ansible.cfg and relies on ara's old default port 9191. Modern
+    # ara (1.8) instead reads ~/.ara/server/settings.yaml and its runserver now
+    # binds 127.0.0.1:8000, so the UI is not reachable. Restore the intended
+    # 0.0.0.0:9191 from here (core file, no vendored-role edits).
+    - name: ensure the ara server directory exists
+      ansible.builtin.file:
+        path: /root/.ara/server
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: generate an ara secret key
+      ansible.builtin.command: python3 -c "import secrets; print(secrets.token_hex(50))"
+      register: ara_secret_key
+      changed_when: no
+
+    - name: write ara server settings.yaml (modern ara 1.8 config location)
+      ansible.builtin.copy:
+        dest: /root/.ara/server/settings.yaml
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          default:
+            ALLOWED_HOSTS:
+              - 127.0.0.1
+              - ::1
+              - localhost
+              - orbstack
+            BASE_DIR: /root/.ara/server
+            BASE_PATH: /
+            CORS_ORIGIN_ALLOW_ALL: true
+            CSRF_TRUSTED_ORIGINS: []
+            DEBUG: false
+            DATABASE_ENGINE: django.db.backends.sqlite3
+            DATABASE_NAME: /root/.ara/server/ansible.sqlite
+            LOG_LEVEL: INFO
+            PAGE_SIZE: 100
+            READ_LOGIN_REQUIRED: false
+            TIME_ZONE: UTC
+            WRITE_LOGIN_REQUIRED: false
+            SECRET_KEY: "{{ ara_secret_key.stdout }}"
+
+    # ara_binary_location comes from the ara role's vars (RedHat → /usr/local/bin)
+    # and matches the ExecStart path the role generated in the unit file.
+    - name: apply ara database migrations (modern ara needs its Django schema; the 2019 role never ran this)
+      ansible.builtin.command: "{{ ara_binary_location | default('/usr/local/bin') }}/ara-manage migrate"
+      register: ara_migrate
+      changed_when: "'No migrations to apply' not in ara_migrate.stdout"
+
+    - name: bind the ara runserver to 0.0.0.0:9191 in the systemd unit
+      ansible.builtin.lineinfile:
+        path: /etc/systemd/system/ara.service
+        regexp: '^ExecStart=.*ara-manage runserver.*$'
+        line: 'ExecStart={{ ara_binary_location | default("/usr/local/bin") }}/ara-manage runserver 0.0.0.0:9191'
+        state: present
+
+    - name: reload systemd and restart ara
+      ansible.builtin.systemd:
+        name: ara
+        daemon_reload: yes
+        enabled: yes
+        state: restarted
+
+    # Remaining roles after ara, in playbook.yml order. Atom ships only an
+    # x86_64 Linux rpm and is EOL, so it cannot install on arm64 and is skipped
+    # there (Apple Silicon). git/ruby/travis are architecture independent.
+    - name: apply robertdebock.ruby
+      ansible.builtin.import_role:
+        name: robertdebock.ruby
+
+    - name: apply robertdebock.travis
+      ansible.builtin.import_role:
+        name: robertdebock.travis
+
+    - name: apply robertdebock.git
+      ansible.builtin.import_role:
+        name: robertdebock.git
+
+    - name: apply robertdebock.atom (x86_64-only; skipped on arm64)
+      ansible.builtin.include_role:
+        name: robertdebock.atom
+      when:
+        - ansible_architecture is not defined or ansible_architecture != "aarch64"

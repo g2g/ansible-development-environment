@@ -1,0 +1,26 @@
+---
+# Connection facts for an OrbStack Linux machine, reached through OrbStack's
+# built-in SSH server (no in-VM sshd / Vagrant required).
+# The machine must be named `orbstack` (OrbStack selects a machine by the SSH user).
+# We connect as root (user@machine) so the bootstrap role's raw package install works.
+ansible_host: localhost
+ansible_port: 32222
+ansible_user: root@orbstack
+ansible_private_key_file: ~/.orbstack/ssh/id_ed25519
+ansible_python_interpreter: /usr/bin/python3
+# OrbStack's SSH server lives on the Mac, so skip the bootstrap role's
+# wait_for on that port (it would check it from inside the machine and fail).
+bootstrap_wait_for_host: no
+
+# The `robertdebock.docker` role is omitted on OrbStack (Docker runs natively on
+# the Mac via OrbStack, not as an in-VM daemon), so the docker group it would
+# create does not exist. Override the user list (host_vars wins over the shared
+# group_vars/all.yml) to drop `groups: docker`; the Vagrant path is unaffected.
+users_user_list:
+  - name: robertdb
+    comment: Robert de Bock
+    group: robertdb
+    cron_allow: yes
+    sudo_options: "ALL=(ALL) NOPASSWD: ALL"
+    manage_ssh_key: yes
+    copy_private_key: yes
