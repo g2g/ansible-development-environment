@@ -16,7 +16,7 @@
         orb list | awk -v m='{{ ansible_user | default('root@ansible-dev') | split('@') | last }}'
         '$1==m {found=1} END {exit found?0:1}'
       delegate_to: localhost
-      become: no
+      become: false
       register: orb_machine_check
       failed_when: false
       changed_when: false
@@ -26,7 +26,7 @@
         orb create fedora
         {{ ansible_user | default('root@ansible-dev') | split('@') | last }}
       delegate_to: localhost
-      become: no
+      become: false
       when: orb_machine_check.rc != 0
 
     - name: wait for the OrbStack machine to be running
@@ -34,7 +34,7 @@
         orb list | awk -v m='{{ ansible_user | default('root@ansible-dev') | split('@') | last }}'
         '$1==m {print $2}'
       delegate_to: localhost
-      become: no
+      become: false
       register: orb_machine_state
       until: orb_machine_state.stdout == 'running'
       retries: 30
@@ -59,6 +59,60 @@
     - robertdebock.ara
 
   tasks:
+    # Shared folder from the Mac into the g2g home (host_vars/ansible-dev.yml
+    # `shared_folder`). OrbStack's per-machine `mounts` config only applies to
+    # isolated machines, so bind-mount the virtiofs Mac path natively instead.
+    # Runs after the users role, so /home/g2g exists.
+    - name: Ensure the shared folder exists on the Mac
+      ansible.builtin.file:
+        path: "{{ shared_folder.mac_src }}"
+        state: directory
+        mode: "0755"
+      delegate_to: localhost
+      become: false
+      when: shared_folder is defined
+
+    - name: Ensure the shared folder mount point exists in the machine
+      ansible.builtin.file:
+        path: "{{ shared_folder.linux_dst }}"
+        state: directory
+        owner: g2g
+        group: g2g
+        mode: "0755"
+      when: shared_folder is defined
+
+    # Plain `bind,nofail` (no x-systemd.automount): systemd mounts it eagerly at
+    # boot and `findmnt`/`state: mounted` reflect the real bind, so the verify
+    # task below cannot pass on a lazy automount entry alone. `nofail` keeps the
+    # boot intact if the virtiofs source is not ready yet; re-running the
+    # playbook (or `mount --bind`) re-establishes it in that edge case.
+    - name: Persist the shared folder bind mount in fstab
+      ansible.posix.mount:
+        path: "{{ shared_folder.linux_dst }}"
+        src: "{{ shared_folder.mac_src }}"
+        fstype: none
+        opts: "bind,nofail"
+        dump: "0"
+        passno: "0"
+        state: present
+      when: shared_folder is defined
+
+    - name: Mount the shared folder now
+      ansible.posix.mount:
+        path: "{{ shared_folder.linux_dst }}"
+        src: "{{ shared_folder.mac_src }}"
+        fstype: none
+        opts: "bind,nofail"
+        state: mounted
+      when: shared_folder is defined
+
+    - name: Verify the shared folder is mounted in the machine
+      ansible.builtin.command: findmnt {{ shared_folder.linux_dst }}
+      register: shared_folder_mount
+      changed_when: false
+      failed_when: shared_folder_mount.rc != 0
+      when: shared_folder is defined
+
     # The vendored robertdebock.ara role (2018/2019 era) writes its config to
     # [ara] in ansible.cfg and relies on ara's old default port 9191. Modern
     # ara (1.8) instead reads ~/.ara/server/settings.yaml and its runserver now

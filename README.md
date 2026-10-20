@@ -68,7 +68,7 @@ Run it (point `-i` at the `hosts` file to skip the Vagrant-only `vagant.py` inve
 ./playbook.orbstack.yml -i inventory/hosts
 ```
 
-Afterwards, `molecule`'s docker driver and `ara` run natively on the Mac through OrbStack (no in-VM docker daemon), and the `ara` UI is available at http://localhost:9191.
+Afterwards, `molecule`'s docker driver and `ara` run natively on the Mac through OrbStack (no in-VM docker daemon), and the `ara` UI is available at http://localhost:9191. Your `~/Work` folder on the Mac is bind-mounted into the machine at `/home/g2g/Work` (see the `shared_folder` var in `inventory/host_vars/ansible-dev.yml`), so code and role checkouts live at the same path on both sides.
 
 ## Install
 
