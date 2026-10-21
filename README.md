@@ -82,7 +82,7 @@ Preparing your system will take about 15 minutes or so (mostly package and pip i
 
 ## New roles
 
-`ansible-galaxy init` scaffolds new roles from the [robertdebock role skeleton](https://github.com/robertdebock/ansible-role-skeleton), vendored in `roles/robertdebock.skeleton` and wired in through the `[galaxy]` section of `ansible.cfg`. Run it from this directory so that `ansible.cfg` applies:
+`ansible-galaxy init` scaffolds new roles from the [g2g role skeleton](https://github.com/g2g/ansible-role-skeleton), vendored in `roles/robertdebock.skeleton` and wired in through the `[galaxy]` section of `ansible.cfg`. Run it from this directory so that `ansible.cfg` applies:
 
 ```sh
 ansible-galaxy init role_name

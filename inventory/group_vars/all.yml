@@ -61,3 +61,5 @@ git_repositories:
     dest: ansible-role-python_pip
   - repo: https://github.com/robertdebock/ansible-role-reboot.git
     dest: ansible-role-reboot
+  - repo: https://github.com/g2g/ansible-role-skeleton.git
+    dest: ansible-role-skeleton
