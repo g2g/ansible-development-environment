@@ -30,7 +30,7 @@ git_username: g2g
 git_user_name: Laurent G
 git_user_email: laurent@guesde.com
 
-git_repository_destination: /home/g2g/Documents/github.com/robertdebock
+git_repository_destination: /home/laurent/roles
 
 git_repositories:
   - repo: https://github.com/robertdebock/ansible-role-ara.git
