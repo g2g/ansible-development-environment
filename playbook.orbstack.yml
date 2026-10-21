@@ -124,6 +124,20 @@
       failed_when: shared_folder_mount.rc != 0
       when: shared_folder is defined
 
+    # Copy (not symlink) the repo's ansible.cfg to the dev user's home as
+    # ~/.ansible.cfg so the role_skeleton, the yaml result format and
+    # host_key_checking=no apply from any CWD, not only inside the repo dir.
+    # A copy goes stale when the repo file changes; re-running the playbook
+    # re-syncs it. The relative paths in it (inventory=, roles_path=) resolve
+    # against the CWD, and a config in the CWD itself still takes precedence.
+    - name: copy the repo ansible.cfg to the dev user home as .ansible.cfg
+      ansible.builtin.copy:
+        src: ansible.cfg
+        dest: /home/laurent/.ansible.cfg
+        owner: laurent
+        group: laurent
+        mode: "0644"
+
     # The vendored robertdebock.ara role (2018/2019 era) writes its config to
     # [ara] in ansible.cfg and relies on ara's old default port 9191. Modern
     # ara (1.8) instead reads ~/.ara/server/settings.yaml and its runserver now
