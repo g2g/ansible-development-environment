@@ -59,6 +59,7 @@ On macOS you can skip Vagrant and run the whole environment inside an [OrbStack]
 
 3. In `inventory/hosts`, uncomment the `ansible-dev` host in the `[orbstack]` group.
 4. Personalize `inventory/group_vars/all.yml`, `files/gitconfig` and `files/id_rsa` (as for Vagrant above).
+5. The OrbStack dev user is `laurent` (the same account as on the Mac). Its login keypair lives in the gitignored `files/ssh_keys/` dir, with its public half pinned in `inventory/host_vars/ansible-dev.yml`. If you previously provisioned the machine under the old `g2g` user, rename that local keypair so the existing key is reused instead of a fresh one being generated: `cd files/ssh_keys && mv g2g* laurent*` (the role's `creates:` guards then skip keygen and the pinned authorized key keeps matching).
 
 The connection facts live in `inventory/host_vars/ansible-dev.yml` (built-in SSH server: `localhost:32222`, key `~/.orbstack/ssh/id_ed25519`, connect as `root`). `playbook.orbstack.yml` is identical to `playbook.yml` but omits the `docker` and `vagrant` roles — OrbStack is already the Docker engine, and Apple Silicon has no nested-KVM Vagrant support.
 
@@ -68,7 +69,7 @@ Run it (point `-i` at the `hosts` file to skip the Vagrant-only `vagant.py` inve
 ./playbook.orbstack.yml -i inventory/hosts
 ```
 
-Afterwards, `molecule`'s docker driver and `ara` run natively on the Mac through OrbStack (no in-VM docker daemon), and the `ara` UI is available at http://localhost:9191. Your `~/Work` folder on the Mac is bind-mounted into the machine at `/home/g2g/Work` (see the `shared_folder` var in `inventory/host_vars/ansible-dev.yml`), so code and role checkouts live at the same path on both sides.
+Afterwards, `molecule`'s docker driver and `ara` run natively on the Mac through OrbStack (no in-VM docker daemon), and the `ara` UI is available at http://localhost:9191. Your `~/Work` folder on the Mac is bind-mounted into the machine at `/home/laurent/Work` (see the `shared_folder` var in `inventory/host_vars/ansible-dev.yml`), so code and role checkouts live at the same path on both sides.
 
 ## Install
 

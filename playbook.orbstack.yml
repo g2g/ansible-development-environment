@@ -60,10 +60,10 @@
     - robertdebock.ara
 
   tasks:
-    # Shared folder from the Mac into the g2g home (host_vars/ansible-dev.yml
+    # Shared folder from the Mac into the laurent home (host_vars/ansible-dev.yml
     # `shared_folder`). OrbStack's per-machine `mounts` config only applies to
     # isolated machines, so bind-mount the virtiofs Mac path natively instead.
-    # Runs after the users role, so /home/g2g exists.
+    # Runs after the users role, so /home/laurent exists.
     - name: Ensure the shared folder exists on the Mac
       ansible.builtin.file:
         path: "{{ shared_folder.mac_src }}"
@@ -73,12 +73,22 @@
       become: false
       when: shared_folder is defined
 
+    # One-shot cleanup for machines migrated from the old g2g user: unmount and
+    # drop the stale /home/g2g/Work fstab entry so only the new /home/laurent/Work
+    # bind remains (two entries for the same Mac source would be confusing). No-op
+    # on a fresh machine that never had g2g.
+    - name: Remove the pre-rename g2g shared-folder bind mount if present
+      ansible.posix.mount:
+        path: /home/g2g/Work
+        state: absent
+      when: shared_folder is defined
+
     - name: Ensure the shared folder mount point exists in the machine
       ansible.builtin.file:
         path: "{{ shared_folder.linux_dst }}"
         state: directory
-        owner: g2g
-        group: g2g
+        owner: laurent
+        group: laurent
         mode: "0755"
       when: shared_folder is defined
 
